@@ -86,11 +86,11 @@ class AppTheme {
       ),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith(
-        (s) => s.contains(MaterialState.selected) ? Colors.white : AppColors.textHint,
+      thumbColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected) ? Colors.white : AppColors.textHint,
       ),
-      trackColor: MaterialStateProperty.resolveWith(
-        (s) => s.contains(MaterialState.selected)
+      trackColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected)
             ? AppColors.primary
             : AppColors.surfaceVariant,
       ),

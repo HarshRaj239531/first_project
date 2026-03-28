@@ -32,7 +32,7 @@ class AutomationScreen extends StatelessWidget {
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: ctrl.rules.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (_, i) {
                     final rule = ctrl.rules[i];
                     return _RuleCard(

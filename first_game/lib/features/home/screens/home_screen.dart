@@ -4,7 +4,6 @@ import 'package:animate_do/animate_do.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../devices/device_provider.dart';
-import '../../automation/automation_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../widgets/room_selector.dart';
 import '../../../shared/widgets/device_card.dart';

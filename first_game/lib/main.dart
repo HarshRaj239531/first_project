@@ -41,7 +41,7 @@ class SmartHomeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
       child: Consumer<SettingsController>(
-        builder: (_, settings, __) {
+        builder: (_, settings, _) {
           return MaterialApp(
             title: 'Smart Home AI',
             debugShowCheckedModeBanner: false,
