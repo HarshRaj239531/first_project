@@ -1,70 +1,126 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../devices/device_controller.dart';
+import '../../devices/device_provider.dart';
 import '../../automation/automation_controller.dart';
 import '../../../routes/app_routes.dart';
+import '../widgets/room_selector.dart';
+import '../../../shared/widgets/device_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  String _selectedRoom = 'Living Room';
+
+  @override
   Widget build(BuildContext context) {
-    final deviceCtrl = context.watch<DeviceController>();
-    final autoCtrl = context.watch<AutomationController>();
+    final devices = ref.watch(deviceProvider);
+    // Legacy support for automation for now
+    // final autoCtrl = context.watch<AutomationController>(); 
+
+    final rooms = ref.read(deviceProvider.notifier).rooms;
+    final filteredDevices = devices.where((d) => d.room == _selectedRoom).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FadeInDown(duration: const Duration(milliseconds: 800), child: _Header()),
-                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: FadeInDown(duration: const Duration(milliseconds: 800), child: _Header()),
+                ),
                 FadeInUp(
                   duration: const Duration(milliseconds: 800),
                   delay: const Duration(milliseconds: 200),
-                  child: _StatsRow(
-                    devicesOnline: deviceCtrl.onlineCount,
-                    totalDevices: deviceCtrl.devices.length,
-                    activeRules: autoCtrl.activeRulesCount,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _StatsRow(
+                      devicesOnline: devices.where((d) => d.isOn).length,
+                      totalDevices: devices.length,
+                      activeRules: 3, // Mocked for now
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                FadeInUp(
-                  duration: const Duration(milliseconds: 800),
-                  delay: const Duration(milliseconds: 400),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 4,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                FadeInLeft(
+                  duration: const Duration(milliseconds: 600),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'Quick Rooms',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'AI Smart Dashboard',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                RoomSelector(
+                  rooms: rooms,
+                  selectedRoom: _selectedRoom,
+                  onRoomSelected: (room) => setState(() => _selectedRoom = room),
+                ),
+                const SizedBox(height: 24),
+                // Featured devices for room
+                SizedBox(
+                  height: 180,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: filteredDevices.length,
+                    itemBuilder: (context, index) {
+                      final device = filteredDevices[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: SizedBox(
+                          width: 160,
+                          child: DeviceCard(
+                            device: device,
+                            onToggle: () => ref.read(deviceProvider.notifier).toggleDevice(device.id),
+                            onTap: () => Navigator.pushNamed(
+                              context, 
+                              AppRoutes.deviceDetail, 
+                              arguments: device.id,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 40),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    'Smart Capabilities',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                _FeatureGrid(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _FeatureGrid(),
+                ),
+                const SizedBox(height: 32),
               ],
             ),
           ),

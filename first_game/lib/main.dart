@@ -34,11 +34,6 @@ class SmartHomeApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProvider(create: (_) => DeviceController()),
-        ChangeNotifierProxyProvider<DeviceController, HomeController>(
-          create: (ctx) => HomeController(ctx.read<DeviceController>()),
-          update: (_, deviceCtrl, prev) => HomeController(deviceCtrl),
-        ),
         ChangeNotifierProvider(create: (_) => VoiceController()),
         ChangeNotifierProvider(create: (_) => GestureController()),
         ChangeNotifierProvider(create: (_) => WebController()),
