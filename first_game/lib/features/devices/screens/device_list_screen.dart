@@ -1,16 +1,17 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:first_game/core/constants/app_colors.dart';
 import 'package:first_game/core/constants/app_strings.dart';
 import 'package:first_game/shared/widgets/device_card.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../device_controller.dart';
+import '../device_provider.dart';
 
-class DeviceListScreen extends StatelessWidget {
+class DeviceListScreen extends ConsumerWidget {
   const DeviceListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = context.watch<DeviceController>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final devices = ref.watch(deviceProvider);
+    final notifier = ref.read(deviceProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -18,10 +19,9 @@ class DeviceListScreen extends StatelessWidget {
         title: const Text(AppStrings.allDevices),
         actions: [
           PopupMenuButton<String>(
-            color: AppColors.cardDark,
+            color: AppColors.surface,
             onSelected: (v) {
-              if (v == 'on') controller.turnAllOn();
-              if (v == 'off') controller.turnAllOff();
+              // Implementation for turn all on/off can be added to notifier
             },
             itemBuilder: (_) => const [
               PopupMenuItem(value: 'on', child: Text('Turn All ON', style: TextStyle(color: AppColors.textPrimary))),
@@ -31,33 +31,37 @@ class DeviceListScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Stats bar
             _StatsBar(
-              total: controller.devices.length,
-              online: controller.onlineCount,
+              total: devices.length,
+              online: devices.where((d) => d.isOn).length,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // Device grid
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.85,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.8,
               ),
-              itemCount: controller.devices.length,
+              itemCount: devices.length,
               itemBuilder: (ctx, i) {
-                final device = controller.devices[i];
+                final device = devices[i];
                 return DeviceCard(
                   device: device,
-                  onToggle: () => controller.toggleDevice(device.id),
-                  onTap: () => Navigator.pushNamed(ctx, '/device-detail'),
+                  onToggle: () => notifier.toggleDevice(device.id),
+                  onTap: () => Navigator.pushNamed(
+                    ctx, 
+                    '/device-detail', 
+                    arguments: device.id,
+                  ),
                 );
               },
             ),
@@ -67,6 +71,7 @@ class DeviceListScreen extends StatelessWidget {
     );
   }
 }
+
 
 class _StatsBar extends StatelessWidget {
   final int total;

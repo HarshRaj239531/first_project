@@ -24,7 +24,8 @@ class RouteGenerator {
       case AppRoutes.devices:
         return _slide(const DeviceListScreen());
       case AppRoutes.deviceDetail:
-        return _slide(const DeviceDetailScreen());
+        final deviceId = settings.arguments as String?;
+        return _slide(DeviceDetailScreen(deviceId: deviceId));
       case AppRoutes.voiceControl:
         return _slide(const VoiceScreen());
       case AppRoutes.gestureControl:
