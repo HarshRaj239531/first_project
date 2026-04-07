@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'repositories/auth_repository.dart';
 
 class AuthController extends ChangeNotifier {
+  final IAuthRepository _authRepository;
+
+  AuthController(this._authRepository);
+
   bool _isLoading = false;
   bool _isLoggedIn = false;
   String? _errorMessage;
@@ -16,37 +21,39 @@ class AuthController extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     _setLoading(true);
     _errorMessage = null;
-    try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-      if (email.isNotEmpty && password.length >= 8) {
-        _isLoggedIn = true;
-        _userEmail = email;
-        _userName = email.split('@').first;
-      } else {
-        _errorMessage = 'Invalid credentials. Please try again.';
-      }
-    } catch (_) {
-      _errorMessage = 'Login failed. Please try again.';
+    
+    final response = await _authRepository.login(email, password);
+    
+    if (response.success && response.data != null) {
+      _isLoggedIn = true;
+      _userEmail = response.data!.email;
+      _userName = response.data!.name;
+    } else {
+      _errorMessage = response.message ?? 'Login failed. Please try again.';
     }
+    
     _setLoading(false);
   }
 
   Future<void> signup(String name, String email, String password) async {
     _setLoading(true);
     _errorMessage = null;
-    try {
-      await Future.delayed(const Duration(seconds: 1));
+    
+    final response = await _authRepository.register(name, email, password);
+    
+    if (response.success && response.data != null) {
       _isLoggedIn = true;
-      _userName = name;
-      _userEmail = email;
-    } catch (_) {
-      _errorMessage = 'Signup failed. Please try again.';
+      _userEmail = response.data!.email;
+      _userName = response.data!.name;
+    } else {
+      _errorMessage = response.message ?? 'Signup failed. Please try again.';
     }
+    
     _setLoading(false);
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await _authRepository.logout();
     _isLoggedIn = false;
     _userName = '';
     _userEmail = '';

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as legacy; // To avoid name collisions
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/providers/repository_providers.dart';
 import 'routes/app_routes.dart';
 import 'routes/route_generator.dart';
 
@@ -26,21 +27,28 @@ void main() async {
   );
 }
 
-class SmartHomeApp extends StatelessWidget {
+class SmartHomeApp extends ConsumerWidget {
   const SmartHomeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authRepository = ref.watch(authRepositoryProvider);
+    final deviceRepository = ref.watch(deviceRepositoryProvider);
+
+    return legacy.MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProvider(create: (_) => VoiceController()),
-        ChangeNotifierProvider(create: (_) => GestureController()),
-        ChangeNotifierProvider(create: (_) => WebController()),
-        ChangeNotifierProvider(create: (_) => AutomationController()),
-        ChangeNotifierProvider(create: (_) => SettingsController()),
+        legacy.ChangeNotifierProvider(create: (_) => AuthController(authRepository)),
+        legacy.ChangeNotifierProvider(create: (_) => DeviceController(deviceRepository)),
+        legacy.ChangeNotifierProvider(create: (ctx) => HomeController(
+          legacy.Provider.of<DeviceController>(ctx, listen: false)
+        )),
+        legacy.ChangeNotifierProvider(create: (_) => VoiceController()),
+        legacy.ChangeNotifierProvider(create: (_) => GestureController()),
+        legacy.ChangeNotifierProvider(create: (_) => WebController()),
+        legacy.ChangeNotifierProvider(create: (_) => AutomationController()),
+        legacy.ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
-      child: Consumer<SettingsController>(
+      child: legacy.Consumer<SettingsController>(
         builder: (_, settings, _) {
           return MaterialApp(
             title: 'Smart Home AI',
