@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/repository_providers.dart';
 import 'models/device_model.dart';
 import 'repositories/device_repository.dart';
+
 
 final deviceProvider = StateNotifierProvider<DeviceNotifier, List<Device>>((ref) {
   final repository = ref.watch(deviceRepositoryProvider);
@@ -66,4 +68,27 @@ class DeviceNotifier extends StateNotifier<List<Device>> {
         if (device.id == updatedDevice.id) updatedDevice else device,
     ];
   }
+
+  /// Update a single attribute of a device locally (no backend call needed for frontend-only).
+  void updateAttribute(
+    String id, {
+    double? brightness,
+    double? temperature,
+    int? speed,
+    Color? color,
+  }) {
+    state = [
+      for (final device in state)
+        if (device.id == id)
+          device.copyWith(
+            brightness: brightness,
+            temperature: temperature,
+            speed: speed,
+            color: color,
+          )
+        else
+          device,
+    ];
+  }
 }
+

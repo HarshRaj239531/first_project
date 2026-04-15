@@ -8,6 +8,7 @@ class CustomButton extends StatelessWidget {
   final bool isOutlined;
   final IconData? icon;
   final double? width;
+  final Color? color;
 
   const CustomButton({
     super.key,
@@ -17,32 +18,32 @@ class CustomButton extends StatelessWidget {
     this.isOutlined = false,
     this.icon,
     this.width,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
-      height: 52,
+      height: 54,
       child: isOutlined ? _outlinedButton() : _gradientButton(),
     );
   }
 
   Widget _gradientButton() {
+    final bool disabled = onPressed == null || isLoading;
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: onPressed == null
-            ? null
-            : AppColors.primaryGradient,
-        color: onPressed == null ? AppColors.surfaceVariant : null,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: onPressed == null
+        gradient: disabled ? null : AppColors.primaryGradient,
+        color: disabled ? AppColors.border : null,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: disabled
             ? []
             : [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.35),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: AppColors.primary.withOpacity(0.3),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
       ),
@@ -50,8 +51,10 @@ class CustomButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
+          disabledBackgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
         ),
         child: isLoading
             ? const SizedBox(
@@ -73,8 +76,9 @@ class CustomButton extends StatelessWidget {
                     label,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -87,14 +91,16 @@ class CustomButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: AppColors.primary, width: 1.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        side: BorderSide(
+            color: color ?? AppColors.primary, width: 1.8),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16)),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w600,
+        style: TextStyle(
+          color: color ?? AppColors.primary,
+          fontWeight: FontWeight.w700,
           fontSize: 16,
         ),
       ),

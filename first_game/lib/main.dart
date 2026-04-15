@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart' as legacy; // To avoid name collisions
+import 'package:provider/provider.dart' as legacy;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
@@ -48,16 +48,13 @@ class SmartHomeApp extends ConsumerWidget {
         legacy.ChangeNotifierProvider(create: (_) => AutomationController()),
         legacy.ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
-      child: legacy.Consumer<SettingsController>(
-        builder: (_, settings, _) {
-          return MaterialApp(
-            title: 'Smart Home AI',
-            debugShowCheckedModeBanner: false,
-            theme: settings.isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
-            initialRoute: AppRoutes.login,
-            onGenerateRoute: RouteGenerator.generateRoute,
-          );
-        },
+      child: MaterialApp(
+        title: 'Smart Home AI',
+        debugShowCheckedModeBanner: false,
+        // Always Light — the whole app is light-blue/white
+        theme: AppTheme.lightTheme,
+        initialRoute: AppRoutes.login,
+        onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }

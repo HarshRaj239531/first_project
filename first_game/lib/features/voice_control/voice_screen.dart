@@ -36,53 +36,53 @@ class _VoiceScreenState extends State<VoiceScreen>
     final ctrl = context.watch<VoiceController>();
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(context, ctrl),
-              // Mic area
-              Expanded(
-                flex: 3,
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── AppBar ────────────────────────────────────────────────────
+            _buildAppBar(context, ctrl),
+
+            // ── Mic Hero Area ─────────────────────────────────────────────
+            Expanded(
+              flex: 4,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppColors.headerGradient,
+                ),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildAIWaveform(ctrl),
-                      const SizedBox(height: 40),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 600),
-                        child: Text(
-                          ctrl.isListening
-                              ? AppStrings.listening
-                              : ctrl.isProcessing
-                                  ? AppStrings.processing
-                                  : AppStrings.tapToSpeak,
-                          style: TextStyle(
-                            color: ctrl.isListening
-                                ? AppColors.accent
-                                : AppColors.textPrimary,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
+                      const SizedBox(height: 28),
+                      Text(
+                        ctrl.isListening
+                            ? AppStrings.listening
+                            : ctrl.isProcessing
+                                ? AppStrings.processing
+                                : AppStrings.tapToSpeak,
+                        style: TextStyle(
+                          color: ctrl.isListening
+                              ? const Color(0xFFB2EBF2)
+                              : Colors.white.withOpacity(0.9),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
                         ),
                       ),
                       if (ctrl.currentText.isNotEmpty) ...[
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: FadeInDown(
-                            duration: const Duration(milliseconds: 400),
-                            child: Text(
-                              '"${ctrl.currentText}"',
-                              style: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 15,
-                                  fontStyle: FontStyle.italic),
-                              textAlign: TextAlign.center,
-                            ),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            '"${ctrl.currentText}"',
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
@@ -90,42 +90,122 @@ class _VoiceScreenState extends State<VoiceScreen>
                   ),
                 ),
               ),
-              // History
-              Expanded(
-                flex: 4,
-                child: _buildHistorySection(ctrl),
+            ),
+
+            // ── History Section ───────────────────────────────────────────
+            Expanded(
+              flex: 5,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Recent Commands',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                            ),
+                          ),
+                          if (ctrl.history.isNotEmpty)
+                            TextButton.icon(
+                              onPressed: ctrl.clearHistory,
+                              icon: const Icon(Icons.delete_sweep_outlined,
+                                  size: 16),
+                              label: const Text('Clear'),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.error),
+                            )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ctrl.history.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primarySurface,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                        Icons.history_rounded,
+                                        color: AppColors.primary,
+                                        size: 36),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  const Text(
+                                    AppStrings.noVoiceCommands,
+                                    style: TextStyle(
+                                        color: AppColors.textHint,
+                                        fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20, 0, 20, 16),
+                              itemCount: ctrl.history.length,
+                              itemBuilder: (_, i) => FadeInUp(
+                                duration:
+                                    const Duration(milliseconds: 400),
+                                delay: Duration(milliseconds: i * 80),
+                                child:
+                                    _CommandTile(command: ctrl.history[i]),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildAppBar(BuildContext context, VoiceController ctrl) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return Container(
+      color: AppColors.primary,
+      padding:
+          const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
+            icon: const Icon(Icons.arrow_back_ios_new,
+                color: Colors.white, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          const Text(
-            'Smart AI Assistant',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
+          const Expanded(
+            child: Text(
+              'Voice AI Assistant',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          ctrl.history.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.delete_sweep_outlined, color: AppColors.error),
-                  onPressed: () => ctrl.clearHistory(),
-                )
-              : const SizedBox(width: 48),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -147,7 +227,7 @@ class _VoiceScreenState extends State<VoiceScreen>
                   size: const Size(200, 200),
                   painter: WavePainter(
                     animationValue: _waveCtrl.value,
-                    color: AppColors.primary,
+                    color: Colors.white,
                   ),
                 ),
               Container(
@@ -155,23 +235,26 @@ class _VoiceScreenState extends State<VoiceScreen>
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: ctrl.isListening
-                      ? AppColors.mainGradient
-                      : const LinearGradient(
-                          colors: [AppColors.surface, AppColors.surfaceVariant]),
+                  color: ctrl.isListening
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.15),
+                  border: Border.all(
+                      color: Colors.white.withOpacity(0.4), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: (ctrl.isListening ? AppColors.primary : Colors.black)
-                          .withOpacity(0.3),
+                      color: Colors.black.withOpacity(0.15),
                       blurRadius: 20,
-                      spreadRadius: 2,
                     )
                   ],
                 ),
                 child: Icon(
-                  ctrl.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                  color: Colors.white,
-                  size: 40,
+                  ctrl.isListening
+                      ? Icons.mic_rounded
+                      : Icons.mic_none_rounded,
+                  color: ctrl.isListening
+                      ? AppColors.primary
+                      : Colors.white,
+                  size: 42,
                 ),
               ),
             ],
@@ -180,79 +263,9 @@ class _VoiceScreenState extends State<VoiceScreen>
       ),
     );
   }
-
-  Widget _buildHistorySection(VoiceController ctrl) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0x331E293B), // Glass slate
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(40),
-          topRight: Radius.circular(40),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Row(
-              children: [
-                Container(
-                  width: 4,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Recent Commands',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: ctrl.history.isEmpty
-                ? Center(
-                    child: FadeIn(
-                      child: const Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.history_rounded, color: AppColors.textHint, size: 48),
-                          SizedBox(height: 12),
-                          Text(AppStrings.noVoiceCommands,
-                              style: TextStyle(color: AppColors.textHint)),
-                        ],
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: ctrl.history.length,
-                    itemBuilder: (_, i) {
-                      final style = [FadeInUp, FadeInLeft, FadeInRight][i % 3];
-                      return style(
-                        duration: const Duration(milliseconds: 500),
-                        delay: Duration(milliseconds: i * 100),
-                        child: _CommandTile(command: ctrl.history[i]),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
+// ─── Wave Painter ─────────────────────────────────────────────────────────────
 class WavePainter extends CustomPainter {
   final double animationValue;
   final Color color;
@@ -269,12 +282,10 @@ class WavePainter extends CustomPainter {
     for (int i = 0; i < 3; i++) {
       final value = (animationValue + i / 3) % 1.0;
       final radius = (size.width / 2) * value;
-      final opacity = 1.0 - value;
-
       canvas.drawCircle(
         Offset(size.width / 2, size.height / 2),
         radius,
-        paint..color = color.withOpacity(opacity * 0.4),
+        paint..color = color.withOpacity((1.0 - value) * 0.4),
       );
     }
   }
@@ -283,6 +294,7 @@ class WavePainter extends CustomPainter {
   bool shouldRepaint(WavePainter oldDelegate) => true;
 }
 
+// ─── Command Tile ─────────────────────────────────────────────────────────────
 class _CommandTile extends StatelessWidget {
   final dynamic command;
   const _CommandTile({required this.command});
@@ -290,17 +302,17 @@ class _CommandTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.glassBorder, width: 0.5),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.primary.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -309,8 +321,16 @@ class _CommandTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.person_outline_rounded, color: AppColors.textSecondary, size: 16),
-              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySurface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.person_outline_rounded,
+                    color: AppColors.primary, size: 14),
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   command.text,
@@ -323,22 +343,25 @@ class _CommandTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              color: AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                const Icon(Icons.auto_awesome_rounded, color: AppColors.accent, size: 16),
+                const Icon(Icons.auto_awesome_rounded,
+                    color: AppColors.primary, size: 14),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     command.response,
                     style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                        height: 1.4),
                   ),
                 ),
               ],
@@ -349,4 +372,3 @@ class _CommandTile extends StatelessWidget {
     );
   }
 }
-

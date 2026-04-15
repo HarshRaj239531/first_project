@@ -21,282 +21,333 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final devices = ref.watch(deviceProvider);
-    // Legacy support for automation for now
-    // final autoCtrl = context.watch<AutomationController>(); 
-
     final rooms = ref.read(deviceProvider.notifier).rooms;
-    final filteredDevices = devices.where((d) => d.room == _selectedRoom).toList();
+    final filteredDevices =
+        devices.where((d) => d.room == _selectedRoom).toList();
+    final onlineCount = devices.where((d) => d.isOn).length;
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: FadeInDown(duration: const Duration(milliseconds: 800), child: _Header()),
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        slivers: [
+          // ── Fancy SliverAppBar ───────────────────────────────────────────
+          SliverAppBar(
+            expandedHeight: 200,
+            floating: false,
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppColors.headerGradient,
                 ),
-                FadeInUp(
-                  duration: const Duration(milliseconds: 800),
-                  delay: const Duration(milliseconds: 200),
+                child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: _StatsRow(
-                      devicesOnline: devices.where((d) => d.isOn).length,
-                      totalDevices: devices.length,
-                      activeRules: 3, // Mocked for now
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                FadeInLeft(
-                  duration: const Duration(milliseconds: 600),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(
-                      'Quick Rooms',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    child: FadeInDown(
+                      duration: const Duration(milliseconds: 700),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _greeting(),
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.85),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    AppStrings.appName,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () => Navigator.pushNamed(
+                                    context, AppRoutes.settings),
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                        color: Colors.white.withOpacity(0.25)),
+                                  ),
+                                  child: const Icon(Icons.settings_outlined,
+                                      color: Colors.white, size: 22),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          // Stats Row inside header
+                          Row(
+                            children: [
+                              _HeaderStat(
+                                value: '$onlineCount',
+                                label: 'Online',
+                                icon: Icons.bolt_rounded,
+                              ),
+                              const SizedBox(width: 16),
+                              _HeaderStat(
+                                value: '${devices.length}',
+                                label: 'Devices',
+                                icon: Icons.devices_rounded,
+                              ),
+                              const SizedBox(width: 16),
+                              const _HeaderStat(
+                                value: '3',
+                                label: 'Rules',
+                                icon: Icons.auto_awesome_rounded,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+              ),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 28),
+
+                // ── Rooms ──────────────────────────────────────────────────
+                _SectionTitle(
+                  title: 'Rooms',
+                  trailing: TextButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.devices),
+                    child: const Text('See all',
+                        style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 RoomSelector(
                   rooms: rooms,
                   selectedRoom: _selectedRoom,
-                  onRoomSelected: (room) => setState(() => _selectedRoom = room),
+                  onRoomSelected: (room) =>
+                      setState(() => _selectedRoom = room),
                 ),
-                const SizedBox(height: 24),
-                // Featured devices for room
-                SizedBox(
-                  height: 180,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filteredDevices.length,
-                    itemBuilder: (context, index) {
-                      final device = filteredDevices[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: SizedBox(
-                          width: 160,
-                          child: DeviceCard(
-                            device: device,
-                            onToggle: () => ref.read(deviceProvider.notifier).toggleDevice(device.id),
-                            onTap: () => Navigator.pushNamed(
-                              context, 
-                              AppRoutes.deviceDetail, 
-                              arguments: device.id,
+
+                const SizedBox(height: 20),
+
+                // ── Device Cards horizontal scroll ─────────────────────────
+                if (filteredDevices.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                    child: _EmptyDevicesCard(),
+                  )
+                else
+                  SizedBox(
+                    height: 186,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: filteredDevices.length,
+                      itemBuilder: (context, index) {
+                        final device = filteredDevices[index];
+                        return FadeInRight(
+                          duration: const Duration(milliseconds: 400),
+                          delay: Duration(milliseconds: index * 80),
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 14),
+                            child: SizedBox(
+                              width: 158,
+                              child: DeviceCard(
+                                device: device,
+                                onToggle: () => ref
+                                    .read(deviceProvider.notifier)
+                                    .toggleDevice(device.id),
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.deviceDetail,
+                                  arguments: device.id,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 40),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    'Smart Capabilities',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
+                        );
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 32),
+
+                // ── Smart Capabilities ─────────────────────────────────────
+                const _SectionTitle(title: 'Smart Capabilities'),
+                const SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _FeatureGrid(),
                 ),
                 const SizedBox(height: 32),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
-}
 
-// ─── Header ─────────────────────────────────────────────────────────────────
-class _Header extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  String _greeting() {
     final hour = DateTime.now().hour;
-    final greeting = hour < 12
-        ? AppStrings.goodMorning
-        : hour < 17
-            ? AppStrings.goodAfternoon
-            : AppStrings.goodEvening;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '$greeting 👋',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              AppStrings.appName,
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1,
-              ),
-            ),
-          ],
-        ),
-        GestureDetector(
-          onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.glassBorder, width: 0.5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.settings_outlined,
-                color: AppColors.textPrimary, size: 24),
-          ),
-        ),
-      ],
-    );
+    if (hour < 12) return '${AppStrings.goodMorning} 👋';
+    if (hour < 17) return '${AppStrings.goodAfternoon} 👋';
+    return '${AppStrings.goodEvening} 👋';
   }
 }
 
-// ─── Stats Row ───────────────────────────────────────────────────────────────
-class _StatsRow extends StatelessWidget {
-  final int devicesOnline;
-  final int totalDevices;
-  final int activeRules;
-
-  const _StatsRow({
-    required this.devicesOnline,
-    required this.totalDevices,
-    required this.activeRules,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _StatCard(
-            label: AppStrings.devicesOnline,
-            value: '$devicesOnline/$totalDevices',
-            icon: Icons.bolt_rounded,
-            color: AppColors.primary,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _StatCard(
-            label: AppStrings.automationActive,
-            value: activeRules.toString(),
-            icon: Icons.auto_awesome_rounded,
-            color: AppColors.accent,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
+// ─── Header Stat Chip ─────────────────────────────────────────────────────────
+class _HeaderStat extends StatelessWidget {
   final String value;
+  final String label;
   final IconData icon;
-  final Color color;
 
-  const _StatCard({
-    required this.label,
+  const _HeaderStat({
     required this.value,
+    required this.label,
     required this.icon,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withOpacity(0.2), width: 1),
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(14),
+        border:
+            Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(height: 16),
-          Text(value,
-              style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1)),
-          Text(label,
-              style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600)),
+          Icon(icon, color: Colors.white, size: 16),
+          const SizedBox(width: 6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(value,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      height: 1.1)),
+              Text(label,
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.75),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500)),
+            ],
+          )
         ],
       ),
     );
   }
 }
 
-// ─── Feature Grid ────────────────────────────────────────────────────────────
+// ─── Section Title ────────────────────────────────────────────────────────────
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  final Widget? trailing;
+
+  const _SectionTitle({required this.title, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
+            ),
+          ),
+          if (trailing != null) trailing!,
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+class _EmptyDevicesCard extends StatelessWidget {
+  const _EmptyDevicesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.device_unknown_rounded,
+              color: AppColors.textHint, size: 32),
+          SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              'No devices in this room yet.',
+              style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Feature Grid ─────────────────────────────────────────────────────────────
 class _FeatureGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final features = [
-      _Feature('Devices', Icons.devices_other_rounded, AppColors.primary, AppRoutes.devices,
-          'Control & monitor'),
-      _Feature('Voice AI', Icons.mic_none_rounded, AppColors.violet, AppRoutes.voiceControl,
-          'Smart assistant'),
-      _Feature('Gesture AI', Icons.pan_tool_outlined, AppColors.pink, AppRoutes.gestureControl,
-          'Air controls'),
-      _Feature('Dashboard', Icons.language_rounded, AppColors.accent, AppRoutes.webControl,
-          'Remote access'),
-      _Feature('Automation', Icons.bolt_rounded, AppColors.success, AppRoutes.automation,
-          'AI smart rules'),
-      _Feature('Settings', Icons.tune_rounded, AppColors.textHint, AppRoutes.settings,
-          'Preferences'),
+      _Feature('Devices', Icons.devices_other_rounded,
+          const Color(0xFF2196F3), AppRoutes.devices, 'Control & monitor'),
+      _Feature('Voice AI', Icons.mic_none_rounded,
+          const Color(0xFF7C3AED), AppRoutes.voiceControl, 'Smart assistant'),
+      _Feature('Gesture AI', Icons.pan_tool_outlined,
+          const Color(0xFFEC4899), AppRoutes.gestureControl, 'Air controls'),
+      _Feature('Dashboard', Icons.language_rounded,
+          const Color(0xFF00BCD4), AppRoutes.webControl, 'Remote access'),
+      _Feature('Automation', Icons.bolt_rounded,
+          const Color(0xFF10B981), AppRoutes.automation, 'AI smart rules'),
+      _Feature('Settings', Icons.tune_rounded,
+          const Color(0xFF64748B), AppRoutes.settings, 'Preferences'),
     ];
 
     return GridView.builder(
@@ -304,14 +355,14 @@ class _FeatureGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.95,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 1.0,
       ),
       itemCount: features.length,
       itemBuilder: (ctx, i) => FadeInUp(
-        duration: const Duration(milliseconds: 600),
-        delay: Duration(milliseconds: 500 + (i * 100)),
+        duration: const Duration(milliseconds: 500),
+        delay: Duration(milliseconds: 100 + (i * 80)),
         child: _FeatureCard(feature: features[i]),
       ),
     );
@@ -345,8 +396,8 @@ class _FeatureCardState extends State<_FeatureCard>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 150));
-    _scale = Tween(begin: 1.0, end: 0.96).animate(
+        vsync: this, duration: const Duration(milliseconds: 120));
+    _scale = Tween(begin: 1.0, end: 0.95).animate(
         CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
@@ -369,57 +420,64 @@ class _FeatureCardState extends State<_FeatureCard>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: AppColors.glassBorder, width: 0.5),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+                color: f.color.withOpacity(0.15), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: f.color.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: f.color.withOpacity(0.07),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Icon container
               Container(
-                padding: const EdgeInsets.all(12),
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [f.color, f.color.withOpacity(0.6)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: f.color.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  color: f.color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(f.icon, color: Colors.white, size: 26),
+                child: Icon(f.icon, color: f.color, size: 24),
               ),
-              const SizedBox(height: 20),
-              Text(f.title,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                    letterSpacing: -0.5,
-                  )),
-              const SizedBox(height: 4),
-              Text(f.subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textHint,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    f.title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      letterSpacing: -0.3,
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 2),
+                  Text(
+                    f.subtitle,
+                    style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ],
           ),
         ),

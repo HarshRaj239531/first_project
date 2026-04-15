@@ -12,44 +12,87 @@ class DeviceListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final devices = ref.watch(deviceProvider);
     final notifier = ref.read(deviceProvider.notifier);
+    final onlineCount = devices.where((d) => d.isOn).length;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(AppStrings.allDevices),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: AppColors.borderLight),
+        ),
         actions: [
           PopupMenuButton<String>(
-            color: AppColors.surface,
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)),
+            elevation: 8,
             onSelected: (v) {
-              // Implementation for turn all on/off can be added to notifier
+              if (v == 'on') {
+                for (final d in devices) {
+                  if (!d.isOn) notifier.toggleDevice(d.id);
+                }
+              } else {
+                for (final d in devices) {
+                  if (d.isOn) notifier.toggleDevice(d.id);
+                }
+              }
             },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'on', child: Text('Turn All ON', style: TextStyle(color: AppColors.textPrimary))),
-              PopupMenuItem(value: 'off', child: Text('Turn All OFF', style: TextStyle(color: AppColors.textPrimary))),
+            itemBuilder: (_) => [
+              _menuItem('on', 'Turn All ON', Icons.power_settings_new,
+                  AppColors.success),
+              _menuItem(
+                  'off', 'Turn All OFF', Icons.power_off, AppColors.error),
             ],
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySurface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.tune_rounded,
+                        color: AppColors.primary, size: 18),
+                    SizedBox(width: 4),
+                    Text('Control',
+                        style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13)),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Stats bar
-            _StatsBar(
-              total: devices.length,
-              online: devices.where((d) => d.isOn).length,
-            ),
-            const SizedBox(height: 32),
-            // Device grid
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      body: Column(
+        children: [
+          // Stats Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: _StatsBar(
+                total: devices.length, online: onlineCount),
+          ),
+          const SizedBox(height: 20),
+          // Grid
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: 0.82,
               ),
               itemCount: devices.length,
               itemBuilder: (ctx, i) {
@@ -58,21 +101,39 @@ class DeviceListScreen extends ConsumerWidget {
                   device: device,
                   onToggle: () => notifier.toggleDevice(device.id),
                   onTap: () => Navigator.pushNamed(
-                    ctx, 
-                    '/device-detail', 
+                    ctx,
+                    '/device-detail',
                     arguments: device.id,
                   ),
                 );
               },
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _menuItem(
+      String value, String label, IconData icon, Color color) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(width: 10),
+          Text(label,
+              style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14)),
+        ],
       ),
     );
   }
 }
 
-
+// ─── Stats Bar ────────────────────────────────────────────────────────────────
 class _StatsBar extends StatelessWidget {
   final int total;
   final int online;
@@ -82,20 +143,30 @@ class _StatsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceVariant),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _stat('Total', total.toString(), Icons.devices, AppColors.primary),
+          _stat('Total', total.toString(), Icons.devices_rounded,
+              AppColors.primary),
           _divider(),
-          _stat('Online', online.toString(), Icons.wifi, AppColors.success),
+          _stat('Online', online.toString(), Icons.wifi_rounded,
+              AppColors.success),
           _divider(),
-          _stat('Offline', (total - online).toString(), Icons.wifi_off, AppColors.textHint),
+          _stat('Offline', (total - online).toString(),
+              Icons.wifi_off_rounded, AppColors.error),
         ],
       ),
     );
@@ -104,21 +175,32 @@ class _StatsBar extends StatelessWidget {
   Widget _stat(String label, String value, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 22),
-        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(height: 8),
         Text(value,
             style: TextStyle(
-                color: color, fontWeight: FontWeight.bold, fontSize: 18)),
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 20)),
         Text(label,
-            style:
-                const TextStyle(color: AppColors.textHint, fontSize: 12)),
+            style: const TextStyle(
+                color: AppColors.textHint,
+                fontSize: 11,
+                fontWeight: FontWeight.w600)),
       ],
     );
   }
 
   Widget _divider() => Container(
-        height: 40,
+        height: 50,
         width: 1,
-        color: AppColors.surfaceVariant,
+        color: AppColors.borderLight,
       );
 }

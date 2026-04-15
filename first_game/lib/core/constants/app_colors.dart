@@ -1,48 +1,83 @@
 import 'package:flutter/material.dart';
 
+/// Smart Home AI — Light Blue & White Color System
 class AppColors {
-  // Primary Palette (Neon & Deep)
-  static const Color primary = Color(0xFF6366F1); // Indigo Neon
-  static const Color accent = Color(0xFF06B6D4);  // Cyan Accent
-  static const Color violet = Color(0xFF8B5CF6);
-  static const Color pink = Color(0xFFEC4899);
+  // ─── Core Brand ──────────────────────────────────────────────────────────────
+  /// Sky blue — primary brand colour
+  static const Color primary = Color(0xFF2196F3);        // Material Blue 500
+  static const Color primaryDark = Color(0xFF1565C0);    // Blue 800
+  static const Color primaryLight = Color(0xFF64B5F6);   // Blue 300
+  static const Color primarySurface = Color(0xFFE3F2FD); // Blue 50
 
-  // Deep Backgrounds
-  static const Color background = Color(0xFF0F172A); // Slate 900
-  static const Color surface = Color(0xFF1E293B);    // Slate 800
-  static const Color surfaceVariant = Color(0xFF334155);
-  
-  // Glassmorphism Foundations
-  static const Color glassBase = Color(0x1A6366F1); // 10% Primary
-  static const Color glassBorder = Color(0x33FFFFFF); // 20% White
-  static const Color glassHighlight = Color(0x4DFFFFFF); // 30% White
+  /// Cyan accent for highlights
+  static const Color accent = Color(0xFF00BCD4);         // Cyan 500
+  static const Color accentLight = Color(0xFFB2EBF2);    // Cyan 100
 
-  // Text
-  static const Color textPrimary = Color(0xFFF8FAFC);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color textHint = Color(0xFF64748B);
+  // ─── Backgrounds ─────────────────────────────────────────────────────────────
+  static const Color background = Color(0xFFF5F9FF);     // Very light blue-white
+  static const Color surface = Colors.white;
+  static const Color surfaceElevated = Color(0xFFEBF4FF); // Slightly tinted card
 
-  // Status
-  static const Color success = Color(0xFF10B981);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-  static const Color info = Color(0xFF3B82F6);
+  // ─── Cards & Borders ─────────────────────────────────────────────────────────
+  static const Color cardBg = Colors.white;
+  static const Color cardDark = Colors.white;            // Kept for backward compat
+  static const Color border = Color(0xFFBBDEFB);         // Blue 100
+  static const Color borderLight = Color(0xFFE3F2FD);    // Blue 50
+  static const Color glassBorder = Color(0xFFBBDEFB);    // alias
 
-  // Gradients (Premium)
-  static const LinearGradient mainGradient = LinearGradient(
-    colors: [primary, violet, pink],
+  // ─── Text ────────────────────────────────────────────────────────────────────
+  static const Color textPrimary = Color(0xFF0D1B2A);    // Near-black with blue tint
+  static const Color textSecondary = Color(0xFF4A6076);  // Muted blue-grey
+  static const Color textHint = Color(0xFF90A4AE);       // Blue Grey 300
+
+  // ─── Status ──────────────────────────────────────────────────────────────────
+  static const Color success = Color(0xFF26A69A);  // Teal 400
+  static const Color warning = Color(0xFFFFA726);  // Orange 400
+  static const Color error   = Color(0xFFEF5350);  // Red 400
+  static const Color info    = Color(0xFF42A5F5);  // Blue 400
+
+  // ─── Device State ────────────────────────────────────────────────────────────
+  static const Color deviceOn  = Color(0xFF1E88E5);      // device active tint
+  static const Color deviceOff = Color(0xFFB0BEC5);      // device inactive
+
+  // ─── Surface variant (for input fills, chips, etc.) ──────────────────────────
+  static const Color surfaceVariant = Color(0xFFE3F2FD); // Blue 50
+
+  // ─── Gradients ───────────────────────────────────────────────────────────────
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF42A5F5), Color(0xFF1565C0)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [background, Color(0xFF020617)],
+    colors: [Color(0xFFF5F9FF), Color(0xFFEBF4FF)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
 
+  static const LinearGradient headerGradient = LinearGradient(
+    colors: [Color(0xFF1E88E5), Color(0xFF0D47A1)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient accentGradient = LinearGradient(
+    colors: [Color(0xFF00BCD4), Color(0xFF0097A7)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient cardGradient = LinearGradient(
+    colors: [Colors.white, Color(0xFFEBF4FF)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // kept for backward-compat — same as primaryGradient
+  static const LinearGradient mainGradient = primaryGradient;
   static const LinearGradient glassGradient = LinearGradient(
-    colors: [Color(0x1AFFFFFF), Color(0x05FFFFFF)],
+    colors: [Color(0x40FFFFFF), Color(0x10FFFFFF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
