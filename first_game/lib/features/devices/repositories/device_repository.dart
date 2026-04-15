@@ -1,8 +1,10 @@
 import '../../../core/models/api_response.dart';
-import '../../../core/services/api_client.dart';
 import '../models/device_model.dart';
 
-/// Contract for Device operations
+/// Contract for Device operations.
+///
+/// When adding a real backend, create a class like `RealDeviceRepository`
+/// that implements this interface and makes actual API calls.
 abstract class IDeviceRepository {
   Future<ApiResponse<List<Device>>> getDevices();
   Future<ApiResponse<Device>> addDevice(Device device);
@@ -10,53 +12,24 @@ abstract class IDeviceRepository {
   Future<ApiResponse<void>> removeDevice(String deviceId);
 }
 
-/// Real implementation using ApiClient
-class RealDeviceRepository implements IDeviceRepository {
-  final ApiClient _apiClient;
+// ─────────────────────────────────────────────────────────────────────────────
+// TODO: BACKEND INTEGRATION POINT
+// When your backend is ready, create a RealDeviceRepository here:
+//
+// class RealDeviceRepository implements IDeviceRepository {
+//   final ApiClient _apiClient;
+//   RealDeviceRepository(this._apiClient);
+//
+//   @override
+//   Future<ApiResponse<List<Device>>> getDevices() async {
+//     final response = await _apiClient.get('/devices');
+//     ...
+//   }
+// }
+// ─────────────────────────────────────────────────────────────────────────────
 
-  RealDeviceRepository(this._apiClient);
-
-  @override
-  Future<ApiResponse<List<Device>>> getDevices() async {
-    final response = await _apiClient.get('/devices');
-    if (response['success'] == true) {
-      final devices = (response['data'] as List)
-          .map((d) => Device.fromJson(d))
-          .toList();
-      return ApiResponse.success(devices);
-    }
-    return ApiResponse.error(response['error'] ?? 'Failed to fetch devices');
-  }
-
-  @override
-  Future<ApiResponse<Device>> addDevice(Device device) async {
-    final response = await _apiClient.post('/devices', device.toJson());
-    if (response['success'] == true) {
-      return ApiResponse.success(Device.fromJson(response['data']));
-    }
-    return ApiResponse.error(response['error'] ?? 'Failed to add device');
-  }
-
-  @override
-  Future<ApiResponse<void>> toggleDevice(String deviceId) async {
-    final response = await _apiClient.post('/devices/$deviceId/toggle', {});
-    if (response['success'] == true) {
-      return ApiResponse.success(null);
-    }
-    return ApiResponse.error(response['error'] ?? 'Failed to toggle device');
-  }
-
-  @override
-  Future<ApiResponse<void>> removeDevice(String deviceId) async {
-    final response = await _apiClient.delete('/devices/$deviceId');
-    if (response['success'] == true) {
-      return ApiResponse.success(null);
-    }
-    return ApiResponse.error(response['error'] ?? 'Failed to remove device');
-  }
-}
-
-/// Mock implementation for development without a backend
+/// Mock implementation for development without a backend.
+/// Uses local data & simulated delays to mimic real API behavior.
 class MockDeviceRepository implements IDeviceRepository {
   final List<Device> _mockDevices = [
     Device(id: 'd1', name: 'Living Room Light', type: DeviceType.light, isOn: true, room: 'Living Room'),
