@@ -40,6 +40,20 @@ class DeviceNotifier extends StateNotifier<List<Device>> {
     _isLoading = false;
   }
 
+  Future<void> addDevice(Device device) async {
+    _isLoading = true;
+    _error = null;
+    state = [...state, device]; // Optimistic update
+
+    final response = await _deviceRepository.addDevice(device);
+    if (!response.success) {
+      _error = response.message;
+      state = state.where((d) => d.id != device.id).toList(); // Rollback
+    }
+    
+    _isLoading = false;
+  }
+
   Future<void> toggleDevice(String id) async {
     final index = state.indexWhere((d) => d.id == id);
     if (index != -1) {

@@ -36,6 +36,12 @@ class AppStrings {
   // Devices
   static const String allDevices = 'All Devices';
   static const String deviceDetail = 'Device Detail';
+  static const String addDevice = 'Add Device';
+  static const String deviceName = 'Device Name';
+  static const String deviceType = 'Device Type';
+  static const String deviceRoom = 'Room';
+  static const String saveDevice = 'Save Device';
+  static const String deviceAddedSuccess = 'Device added successfully!';
   static const String toggleDevice = 'Toggle Device';
   static const String deviceOn = 'ON';
   static const String deviceOff = 'OFF';

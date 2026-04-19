@@ -8,7 +8,6 @@ class Device {
   DeviceType type;
   bool isOn;
   String room;
-  
   // Advanced Attributes
   double brightness; // 0.0 to 1.0
   double temperature; // 16.0 to 30.0 °C

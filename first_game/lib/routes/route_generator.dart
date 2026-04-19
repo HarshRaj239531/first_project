@@ -5,6 +5,7 @@ import '../features/auth/screens/signup_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/devices/screens/device_list_screen.dart';
 import '../features/devices/screens/device_detail_screen.dart';
+import '../features/devices/screens/add_device_screen.dart';
 import '../features/voice_control/voice_screen.dart';
 import '../features/gesture_control/gesture_screen.dart';
 import '../features/web_control/screens/web_dashboard_screen.dart';
@@ -26,6 +27,8 @@ class RouteGenerator {
       case AppRoutes.deviceDetail:
         final deviceId = settings.arguments as String?;
         return _slide(DeviceDetailScreen(deviceId: deviceId));
+      case AppRoutes.addDevice:
+        return _slide(const AddDeviceScreen());
       case AppRoutes.voiceControl:
         return _slide(const VoiceScreen());
       case AppRoutes.gestureControl:

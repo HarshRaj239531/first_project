@@ -3,6 +3,7 @@ import 'package:first_game/core/constants/app_colors.dart';
 import 'package:first_game/core/constants/app_strings.dart';
 import 'package:first_game/shared/widgets/device_card.dart';
 import 'package:flutter/material.dart';
+import 'package:first_game/routes/app_routes.dart';
 import '../device_provider.dart';
 
 class DeviceListScreen extends ConsumerWidget {
@@ -110,6 +111,22 @@ class DeviceListScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.addDevice),
+        backgroundColor: AppColors.primary,
+        elevation: 4,
+        highlightElevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        icon: const Icon(Icons.add_rounded, color: Colors.white),
+        label: const Text(
+          'Add Device',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+          ),
+        ),
       ),
     );
   }
