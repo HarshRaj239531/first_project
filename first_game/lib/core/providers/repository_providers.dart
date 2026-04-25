@@ -16,16 +16,18 @@ import '../../features/devices/repositories/device_repository.dart';
 // });
 // ─────────────────────────────────────────────────────────────────────────────
 
+import '../config/app_config.dart';
+
 /// Provider for AuthRepository — currently returns Mock
 final authRepositoryProvider = Provider<IAuthRepository>((ref) {
-  // TODO: Replace with RealAuthRepository(ref.watch(apiClientProvider))
-  //       when backend is ready
   return MockAuthRepository();
 });
 
-/// Provider for DeviceRepository — currently returns Mock
+/// Provider for DeviceRepository — switches between Mock and Real
 final deviceRepositoryProvider = Provider<IDeviceRepository>((ref) {
-  // TODO: Replace with RealDeviceRepository(ref.watch(apiClientProvider))
-  //       when backend is ready
-  return MockDeviceRepository();
+  if (AppConfig.useMockBackend) {
+    return MockDeviceRepository();
+  } else {
+    return RealDeviceRepository();
+  }
 });

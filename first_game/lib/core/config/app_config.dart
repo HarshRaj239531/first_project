@@ -5,12 +5,11 @@
 class AppConfig {
   /// Toggle this to switch between Mock and Real backend.
   /// Set to `false` once your API server is up.
-  static const bool useMockBackend = true;
+  static const bool useMockBackend = false;
 
-  // TODO: Uncomment and configure when backend is ready
-  // static const String baseUrl = 'https://api.smarthome.ai/v1';
-  // static const Duration connectTimeout = Duration(seconds: 15);
-  // static const Duration receiveTimeout = Duration(seconds: 15);
+  static const String baseUrl = 'http://172.27.53.225:5000';
+  static const Duration connectTimeout = Duration(seconds: 15);
+  static const Duration receiveTimeout = Duration(seconds: 15);
 
   /// Storage keys
   static const String tokenKey = 'auth_token';
