@@ -16,14 +16,22 @@ class DeviceCard extends StatelessWidget {
 
   Color get _deviceColor {
     switch (device.type) {
-      case DeviceType.light:     return const Color(0xFF2196F3);
-      case DeviceType.fan:       return const Color(0xFF00BCD4);
-      case DeviceType.ac:        return const Color(0xFF1565C0);
-      case DeviceType.tv:        return const Color(0xFF7B1FA2);
-      case DeviceType.camera:    return const Color(0xFF00838F);
-      case DeviceType.lock:      return const Color(0xFF1B5E20);
-      case DeviceType.speaker:   return const Color(0xFF4527A0);
-      case DeviceType.thermostat:return const Color(0xFFF57C00);
+      case DeviceType.light:
+        return const Color(0xFF2196F3);
+      case DeviceType.fan:
+        return const Color(0xFF00BCD4);
+      case DeviceType.ac:
+        return const Color(0xFF1565C0);
+      case DeviceType.tv:
+        return const Color(0xFF7B1FA2);
+      case DeviceType.camera:
+        return const Color(0xFF00838F);
+      case DeviceType.lock:
+        return const Color(0xFF1B5E20);
+      case DeviceType.speaker:
+        return const Color(0xFF4527A0);
+      case DeviceType.thermostat:
+        return const Color(0xFFF57C00);
     }
   }
 
@@ -87,7 +95,7 @@ class DeviceCard extends StatelessWidget {
                       child: Switch(
                         value: device.isOn,
                         onChanged: onToggle != null ? (_) => onToggle!() : null,
-                        activeColor: Colors.white,
+                        activeThumbColor: Colors.white,
                         activeTrackColor: _deviceColor,
                         inactiveThumbColor: Colors.white,
                         inactiveTrackColor: AppColors.border,
@@ -124,8 +132,10 @@ class DeviceCard extends StatelessWidget {
 
                 // Status badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: device.isOn
                         ? AppColors.success.withOpacity(0.1)

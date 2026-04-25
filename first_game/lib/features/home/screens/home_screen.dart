@@ -22,8 +22,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final devices = ref.watch(deviceProvider);
     final rooms = ref.read(deviceProvider.notifier).rooms;
-    final filteredDevices =
-        devices.where((d) => d.room == _selectedRoom).toList();
+    final filteredDevices = devices
+        .where((d) => d.room == _selectedRoom)
+        .toList();
     final onlineCount = devices.where((d) => d.isOn).length;
 
     return Scaffold(
@@ -79,17 +80,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.settings),
+                                  context,
+                                  AppRoutes.settings,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.15),
                                     borderRadius: BorderRadius.circular(14),
                                     border: Border.all(
-                                        color: Colors.white.withOpacity(0.25)),
+                                      color: Colors.white.withOpacity(0.25),
+                                    ),
                                   ),
-                                  child: const Icon(Icons.settings_outlined,
-                                      color: Colors.white, size: 22),
+                                  child: const Icon(
+                                    Icons.settings_outlined,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
                                 ),
                               ),
                             ],
@@ -138,10 +145,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   trailing: TextButton(
                     onPressed: () =>
                         Navigator.pushNamed(context, AppRoutes.devices),
-                    child: const Text('See all',
-                        style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600)),
+                    child: const Text(
+                      'See all',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -239,8 +249,7 @@ class _HeaderStat extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(14),
-        border:
-            Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Row(
         children: [
@@ -249,19 +258,25 @@ class _HeaderStat extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(value,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      height: 1.1)),
-              Text(label,
-                  style: TextStyle(
-                      color: Colors.white.withOpacity(0.75),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500)),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  height: 1.1,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.75),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -291,7 +306,7 @@ class _SectionTitle extends StatelessWidget {
               letterSpacing: -0.4,
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );
@@ -313,16 +328,20 @@ class _EmptyDevicesCard extends StatelessWidget {
       ),
       child: const Row(
         children: [
-          Icon(Icons.device_unknown_rounded,
-              color: AppColors.textHint, size: 32),
+          Icon(
+            Icons.device_unknown_rounded,
+            color: AppColors.textHint,
+            size: 32,
+          ),
           SizedBox(width: 16),
           Expanded(
             child: Text(
               'No devices in this room yet.',
               style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
+                color: AppColors.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -336,18 +355,48 @@ class _FeatureGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final features = [
-      _Feature('Devices', Icons.devices_other_rounded,
-          const Color(0xFF2196F3), AppRoutes.devices, 'Control & monitor'),
-      _Feature('Voice AI', Icons.mic_none_rounded,
-          const Color(0xFF7C3AED), AppRoutes.voiceControl, 'Smart assistant'),
-      _Feature('Gesture AI', Icons.pan_tool_outlined,
-          const Color(0xFFEC4899), AppRoutes.gestureControl, 'Air controls'),
-      _Feature('Dashboard', Icons.language_rounded,
-          const Color(0xFF00BCD4), AppRoutes.webControl, 'Remote access'),
-      _Feature('Automation', Icons.bolt_rounded,
-          const Color(0xFF10B981), AppRoutes.automation, 'AI smart rules'),
-      _Feature('Settings', Icons.tune_rounded,
-          const Color(0xFF64748B), AppRoutes.settings, 'Preferences'),
+      _Feature(
+        'Devices',
+        Icons.devices_other_rounded,
+        const Color(0xFF2196F3),
+        AppRoutes.devices,
+        'Control & monitor',
+      ),
+      _Feature(
+        'Voice AI',
+        Icons.mic_none_rounded,
+        const Color(0xFF7C3AED),
+        AppRoutes.voiceControl,
+        'Smart assistant',
+      ),
+      _Feature(
+        'Gesture AI',
+        Icons.pan_tool_outlined,
+        const Color(0xFFEC4899),
+        AppRoutes.gestureControl,
+        'Air controls',
+      ),
+      _Feature(
+        'Dashboard',
+        Icons.language_rounded,
+        const Color(0xFF00BCD4),
+        AppRoutes.webControl,
+        'Remote access',
+      ),
+      _Feature(
+        'Automation',
+        Icons.bolt_rounded,
+        const Color(0xFF10B981),
+        AppRoutes.automation,
+        'AI smart rules',
+      ),
+      _Feature(
+        'Settings',
+        Icons.tune_rounded,
+        const Color(0xFF64748B),
+        AppRoutes.settings,
+        'Preferences',
+      ),
     ];
 
     return GridView.builder(
@@ -396,9 +445,13 @@ class _FeatureCardState extends State<_FeatureCard>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 120));
-    _scale = Tween(begin: 1.0, end: 0.95).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 120),
+    );
+    _scale = Tween(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -424,8 +477,7 @@ class _FeatureCardState extends State<_FeatureCard>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-                color: f.color.withOpacity(0.15), width: 1.2),
+            border: Border.all(color: f.color.withOpacity(0.15), width: 1.2),
             boxShadow: [
               BoxShadow(
                 color: f.color.withOpacity(0.07),

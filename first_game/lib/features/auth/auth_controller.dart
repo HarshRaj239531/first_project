@@ -11,7 +11,7 @@ class AuthController extends ChangeNotifier {
   String? _errorMessage;
   String _userName = '';
   String _userEmail = '';
-  String _userToken = '';
+  final String _userToken = '';
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
   String? get errorMessage => _errorMessage;

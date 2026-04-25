@@ -49,25 +49,34 @@ class SettingsScreen extends StatelessWidget {
                     color: Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.35), width: 1.5),
+                      color: Colors.white.withOpacity(0.35),
+                      width: 1.5,
+                    ),
                   ),
-                  child: const Icon(Icons.person_rounded,
-                      color: Colors.white, size: 30),
+                  child: const Icon(
+                    Icons.person_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Smart Home User',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 17)),
+                      Text(
+                        'Smart Home User',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 17,
+                        ),
+                      ),
                       SizedBox(height: 3),
-                      Text('user@smarthome.ai',
-                          style: TextStyle(
-                              color: Colors.white70, fontSize: 13)),
+                      Text(
+                        'user@smarthome.ai',
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
                     ],
                   ),
                 ),
@@ -77,8 +86,11 @@ class SettingsScreen extends StatelessWidget {
                     color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.edit_outlined,
-                      color: Colors.white, size: 18),
+                  child: const Icon(
+                    Icons.edit_outlined,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ],
             ),
@@ -100,7 +112,7 @@ class SettingsScreen extends StatelessWidget {
                   value: ctrl.notificationsEnabled,
                   onChanged: (_) =>
                       context.read<SettingsController>().toggleNotifications(),
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                 ),
               ),
             ],
@@ -118,8 +130,11 @@ class SettingsScreen extends StatelessWidget {
                 iconColor: const Color(0xFF7C3AED),
                 title: 'Login / Signup',
                 subtitle: 'Manage your account',
-                trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 14, color: AppColors.textHint),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppColors.textHint,
+                ),
                 onTap: () => Navigator.pushNamed(context, AppRoutes.login),
               ),
               _Divider(),
@@ -146,19 +161,26 @@ class SettingsScreen extends StatelessWidget {
                     gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.home_rounded,
-                      color: Colors.white, size: 26),
+                  child: const Icon(
+                    Icons.home_rounded,
+                    color: Colors.white,
+                    size: 26,
+                  ),
                 ),
                 const SizedBox(height: 10),
-                const Text(AppStrings.appName,
-                    style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14)),
+                const Text(
+                  AppStrings.appName,
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                const Text(AppStrings.version,
-                    style: TextStyle(
-                        color: AppColors.textHint, fontSize: 12)),
+                const Text(
+                  AppStrings.version,
+                  style: TextStyle(color: AppColors.textHint, fontSize: 12),
+                ),
               ],
             ),
           ),
@@ -171,16 +193,22 @@ class SettingsScreen extends StatelessWidget {
             height: 54,
             child: OutlinedButton.icon(
               onPressed: () {},
-              icon: const Icon(Icons.logout_rounded,
-                  color: AppColors.error, size: 18),
+              icon: const Icon(
+                Icons.logout_rounded,
+                color: AppColors.error,
+                size: 18,
+              ),
               label: const Text(AppStrings.logout),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.error,
                 side: const BorderSide(color: AppColors.error, width: 1.5),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 textStyle: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 15),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
               ),
             ),
           ),
@@ -286,19 +314,26 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: const TextStyle(
-                          color: AppColors.textHint, fontSize: 12)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
-            if (trailing != null) trailing!,
+            ?trailing,
           ],
         ),
       ),
