@@ -49,20 +49,20 @@ class DeviceCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: device.isOn
-                  ? _deviceColor.withOpacity(0.06)
+                  ? _deviceColor.withValues(alpha: 0.06)
                   : Colors.white,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
                 color: device.isOn
-                    ? _deviceColor.withOpacity(0.25)
+                    ? _deviceColor.withValues(alpha: 0.25)
                     : AppColors.border,
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
                   color: device.isOn
-                      ? _deviceColor.withOpacity(0.12)
-                      : Colors.black.withOpacity(0.04),
+                      ? _deviceColor.withValues(alpha: 0.12)
+                      : Colors.black.withValues(alpha: 0.04),
                   blurRadius: device.isOn ? 18 : 8,
                   offset: const Offset(0, 4),
                 ),
@@ -80,7 +80,7 @@ class DeviceCard extends StatelessWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         color: device.isOn
-                            ? _deviceColor.withOpacity(0.12)
+                            ? _deviceColor.withValues(alpha: 0.12)
                             : AppColors.surfaceVariant,
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -138,7 +138,7 @@ class DeviceCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: device.isOn
-                        ? AppColors.success.withOpacity(0.1)
+                        ? AppColors.success.withValues(alpha: 0.1)
                         : AppColors.surfaceVariant,
                     borderRadius: BorderRadius.circular(8),
                   ),

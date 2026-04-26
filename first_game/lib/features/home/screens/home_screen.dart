@@ -306,7 +306,7 @@ class _SectionTitle extends StatelessWidget {
               letterSpacing: -0.4,
             ),
           ),
-          ?trailing,
+          if (trailing != null) trailing!,
         ],
       ),
     );

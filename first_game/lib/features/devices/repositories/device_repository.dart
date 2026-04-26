@@ -6,7 +6,7 @@ import '../models/device_model.dart';
 abstract class IDeviceRepository {
   Future<ApiResponse<List<Device>>> getDevices();
   Future<ApiResponse<Device>> addDevice(Device device);
-  Future<ApiResponse<void>> toggleDevice(String deviceId);
+  Future<ApiResponse<void>> toggleDevice(String deviceId, bool isOn);
   Future<ApiResponse<void>> removeDevice(String deviceId);
 }
 
@@ -46,17 +46,14 @@ class RealDeviceRepository implements IDeviceRepository {
   }
 
   @override
-  Future<ApiResponse<void>> toggleDevice(String deviceId) async {
+  Future<ApiResponse<void>> toggleDevice(String deviceId, bool isOn) async {
     try {
       final endpoint = _deviceMapping[deviceId];
       if (endpoint == null) return ApiResponse.error('Device not mapped to backend');
 
-      // First get current status to know if we are turning on or off
-      final statusRes = await _apiClient.get('/status');
-      final bool currentState = statusRes.data[endpoint] ?? false;
-      final action = currentState ? 'off' : 'on';
-
+      final action = isOn ? 'on' : 'off';
       final response = await _apiClient.get('/$endpoint/$action');
+      
       if (response.statusCode == 200) {
         return ApiResponse.success(null);
       }
@@ -101,10 +98,10 @@ class MockDeviceRepository implements IDeviceRepository {
   }
 
   @override
-  Future<ApiResponse<void>> toggleDevice(String deviceId) async {
+  Future<ApiResponse<void>> toggleDevice(String deviceId, bool isOn) async {
     final index = _mockDevices.indexWhere((d) => d.id == deviceId);
     if (index != -1) {
-      _mockDevices[index].isOn = !_mockDevices[index].isOn;
+      _mockDevices[index].isOn = isOn;
       return ApiResponse.success(null);
     }
     return ApiResponse.error('Device not found');

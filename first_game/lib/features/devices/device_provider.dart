@@ -65,7 +65,7 @@ class DeviceNotifier extends StateNotifier<List<Device>> {
           if (device.id == id) device.copyWith(isOn: !previousState) else device,
       ];
 
-      final response = await _deviceRepository.toggleDevice(id);
+      final response = await _deviceRepository.toggleDevice(id, !previousState);
       if (!response.success) {
         // Rollback
         state = [

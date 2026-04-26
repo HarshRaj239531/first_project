@@ -50,7 +50,7 @@ class DeviceController extends ChangeNotifier {
       _devices[idx].isOn = !previousState;
       notifyListeners();
 
-      final response = await _deviceRepository.toggleDevice(id);
+      final response = await _deviceRepository.toggleDevice(id, !previousState);
       if (!response.success) {
         // Rollback on failure
         _devices[idx].isOn = previousState;
