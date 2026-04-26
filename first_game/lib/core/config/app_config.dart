@@ -7,7 +7,7 @@ class AppConfig {
   /// Set to `false` once your API server is up.
   static const bool useMockBackend = false;
 
-  static const String baseUrl = 'http://172.27.53.225:5000';
+  static const String baseUrl = 'http://172.27.53.91:5000';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);
 

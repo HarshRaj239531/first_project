@@ -333,7 +333,7 @@ class _SettingsTile extends StatelessWidget {
                 ],
               ),
             ),
-            ?trailing,
+            if (trailing != null) trailing!,
           ],
         ),
       ),

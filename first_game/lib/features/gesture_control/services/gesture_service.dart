@@ -9,6 +9,7 @@ class GestureService {
     {'type': GestureType.hold,       'action': 'Toggle all lights', 'device': 'All Lights'},
     {'type': GestureType.pinch,      'action': 'Lower AC temperature', 'device': 'Air Conditioner'},
     {'type': GestureType.tap,        'action': 'Toggle device', 'device': 'Smart TV'},
+    {'type': GestureType.rock,       'action': 'Toggle Rock Light', 'device': 'Rock Light'},
   ];
 
   Future<GestureModel> detectGesture() async {

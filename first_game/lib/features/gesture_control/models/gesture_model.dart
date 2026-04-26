@@ -1,4 +1,4 @@
-enum GestureType { swipeUp, swipeDown, swipeLeft, swipeRight, tap, hold, pinch }
+enum GestureType { swipeUp, swipeDown, swipeLeft, swipeRight, tap, hold, pinch, rock }
 
 class GestureModel {
   final String id;
@@ -24,6 +24,7 @@ class GestureModel {
       case GestureType.tap:        return '👆 Tap';
       case GestureType.hold:       return '✋ Hold';
       case GestureType.pinch:      return '🤏 Pinch';
+      case GestureType.rock:       return '🤘 Rock On';
     }
   }
 }
